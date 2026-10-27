@@ -1,0 +1,26 @@
+# ROS build files
+build/
+devel/
+install/
+logs/
+log/
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# ROS recordings
+*.bag
+*.bag.active
+
+# Temporary files
+*.swp
+*.tmp
+.DS_Store
+
+# Local secrets
+.env
+.env.*
+*.pem
+*.key
