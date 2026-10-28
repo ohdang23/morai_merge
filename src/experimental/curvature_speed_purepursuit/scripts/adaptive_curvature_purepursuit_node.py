@@ -349,10 +349,12 @@ class AdaptiveCurvaturePurePursuit:
         try:
             age = float(rospy.get_time()) - float(stamp.to_sec())
         except (AttributeError, TypeError, ValueError, OverflowError):
+            self.active_path_received = False
             rospy.logwarn_throttle(2.0, "active path ignored: missing or invalid timestamp")
             return
         if (header.frame_id != self.map_frame or not math.isfinite(age)
                 or not -0.05 <= age <= self.active_path_timeout_sec):
+            self.active_path_received = False
             rospy.logwarn_throttle(
                 2.0,
                 "active path frame=%s ignored; expected %s",
@@ -361,6 +363,7 @@ class AdaptiveCurvaturePurePursuit:
             )
             return
         if any(not all(math.isfinite(float(v)) for v in (p.pose.position.x,p.pose.position.y,p.pose.position.z)) for p in msg.poses):
+            self.active_path_received = False
             return
         points = [
             PathPoint(
@@ -381,6 +384,7 @@ class AdaptiveCurvaturePurePursuit:
         if len(points) < 2:
             # Empty output is a deliberate stop/no-safe-path signal.  Keep the
             # previous geometry for diagnostics, but let freshness expire.
+            self.active_path_received = False
             rospy.logwarn_throttle(1.0, "active path is empty")
             return
         try:
@@ -667,4 +671,3 @@ if __name__ == "__main__":
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
-
